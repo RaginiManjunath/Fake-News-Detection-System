@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2 class="logo">📰 Fake News Detector</h2>
+            <p class="tagline">Verify the truth in news</p>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Fake News Detection</h1>
+            <p class="description">Paste a news article to check if it's real or fake using AI</p>
+        </div>
+
+
+        <div class="content-wrapper">
+            <form method="POST" action="/predict" class="detection-form">
+                <div class="form-group">
+                    <label for="news-input">Enter News Article:</label>
+                    <textarea 
+                        id="news-input"
+                        name="news" 
+                        placeholder="Paste your news article here... (minimum 10 characters)"
+                        required
+                        minlength="10"
+                        class="textarea-input"
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="char-display">0</span>/500 characters
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-icon">⚡</span>
+                    Analyze News
+                </button>
+            </form>
+
+            {% if category %}
+            <div class="result-container">
+                {% if category == "Fake News" %}
+                    <div class="result barely-true">
+                        <div class="result-header">
+                            <span class="result-icon">{{ emoji }}</span>
+                            <div class="result-text">
+                                <h2>{{ category }}</h2>
+                                <p class="percentage-display">{{ percentage }}% Confidence</p>
+                            </div>
+                        </div>
+                        <p class="confidence">⚠️ This article appears to be FALSE or MISLEADING.</p>
+                    </div>
+                {% else %}
+                    <div class="result mostly-true">
+                        <div class="result-header">
+                            <span class="result-icon">{{ emoji }}</span>
+                            <div class="result-text">
+                                <h2>{{ category }}</h2>
+                                <p class="percentage-display">{{ percentage }}% Confidence</p>
+                            </div>
+                        </div>
+                        <p class="confidence">✅ This article appears to be TRUE and CREDIBLE.</p>
+                    </div>
+                {% endif %}
+
+                <div class="article-preview">
+                    <h3>📄 Article Preview:</h3>
+                    <div class="preview-text">
+                        {{ text[:300] }}{% if text|length > 300 %}...{% endif %}
+                    </div>
+                    <a href="/" class="reset-btn">← Check Another Article</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="info-box">
+                <h3>💡 How it works:</h3>
+                <ul>
+                    <li>📝 Paste a news article or headline</li>
+                    <li>🤖 Our AI analyzes the text using machine learning</li>
+                    <li>📊 Instant classification as real or fake news</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Fake News Detection System | Model Accuracy: 61.3% | Built with Flask & Machine Learning</p>
+    </footer>
+
+    <script>
+        const textarea = document.getElementById('news-input');
+        const charDisplay = document.getElementById('char-display');
+
+        textarea.addEventListener('input', function() {
+            charDisplay.textContent = this.value.length;
+            if (this.value.length > 500) {
+                this.value = this.value.substring(0, 500);
+                charDisplay.textContent = 500;
+            }
+        });
+
+        document.querySelector('.detection-form').addEventListener('submit', function(e) {
+            const newsText = textarea.value.trim();
+            if (newsText.length < 10) {
+                e.preventDefault();
+                alert('Please enter at least 10 characters');
+            }
+        });
+    </script>
+</body>
+</html>
